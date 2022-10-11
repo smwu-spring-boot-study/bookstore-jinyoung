@@ -1,6 +1,6 @@
 package SpringAPIStudy.bookstore.app.auth.dto;
 
-import SpringAPIStudy.bookstore.app.enums.Social;
+import SpringAPIStudy.bookstore.app.auth.enums.Social;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;

@@ -1,30 +1,35 @@
 package SpringAPIStudy.bookstore.app.auth.respository;
 
 import SpringAPIStudy.bookstore.app.auth.entity.User;
-import lombok.RequiredArgsConstructor;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
-import javax.persistence.EntityManager;
+import java.util.List;
 import java.util.Optional;
 
 @Repository
-@RequiredArgsConstructor
-public class UserRepository {
+public interface UserRepository extends JpaRepository<User, Long> {
 
-    private final EntityManager em;
+    Optional<User> findByEmail(String email);
 
-    public void save(User user) {
-        em.persist(user);
-    }
+    Optional<User> findBysocialId(String socialId);
 
-    public Optional<User> findById(Long id) {
-        User user = em.find(User.class, id);
-        return Optional.ofNullable(user);
-    }
+    Boolean existsByEmail(String email);
 
-    public Optional<User> findByEmail(String email) {
-        User user = em.find(User.class, email);
-        return Optional.ofNullable(user);
-    };
+//    @Query("SELECT u.refreshToken FROM User u WHERE u.id=:id")
+//    String getRefreshTokenById(@Param("id") Long id);
+
+    @Query("SELECT u.refreshToken FROM User u WHERE u.socialId=:socialId")
+    String getRefreshTokenBySocialId(@Param("socialId") String socialId);
+
+    @Transactional
+    @Modifying
+    @Query("UPDATE User u SET u.refreshToken=:token WHERE u.socialId=:socialId")
+    void updateRefreshToken(@Param("socialId") String socialId, @Param("token") String token);
+
 
 }

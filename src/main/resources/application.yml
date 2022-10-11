@@ -1,20 +1,30 @@
 spring:
+  mvc:
+    pathmatch:
+      matching-strategy: ant_path_matcher
   datasource:
-    url: jdbc:h2:tcp://localhost/~/bookstore;MODE=PostgreSQL
+    url: jdbc:h2:mem:test;DB_CLOSE_DELAY=-1;DATABASE_TO_UPPER=false
     username: sa
     password:
     driver-class-name: org.h2.Driver
 
     jpa:
+      defer-datasource-initialization: true
+      show-sql: true
       hibernate:
-        ddl-auto: update
+        ddl-auto: create-drop
       properties:
         hibernate:
           format_sql: true
 
   profiles:
     include: oauth
+jwt:
+  #HS512 알고리즘을 사용할 것이기 때문에 512bit, 즉 64byte 이상의 secret key를 사용해야 한다.
+  #echo 'silvernine-tech-spring-boot-jwt-tutorial-secret-silvernine-tech-spring-boot-jwt-tutorial-secret'|base64
+  secret: MyNickNameisErjuerAndNameisMinsu
+
 logging:
   level:
     org.hibernate.SQL: debug
-    org.hibernate.type: trace
+    org.hibernate.type.descriptor.sql: trace

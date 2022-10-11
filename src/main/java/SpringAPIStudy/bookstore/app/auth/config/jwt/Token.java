@@ -1,12 +1,9 @@
-package SpringAPIStudy.bookstore.app.auth.entity;
+package SpringAPIStudy.bookstore.app.auth.config.jwt;
 
-import lombok.Builder;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.ToString;
+import lombok.*;
 
 @ToString
-@NoArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
 public class Token {
     private String token;
