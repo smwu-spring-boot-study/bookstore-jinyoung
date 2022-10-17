@@ -22,7 +22,8 @@ public class UserController {
     @GetMapping("/me")
     @PreAuthorize("hasRole('USER')")
     public User getCurrentUser(@AuthenticationPrincipal CustomUserDetails user) {
-        return userRepository.findBysocialId(user.getSocialId()).orElseThrow(() -> new IllegalStateException("not found user"));
+        return userRepository.findBysocialId(user.getSocialId())
+                .orElseThrow(() -> new IllegalStateException("not found user"));
     }
 
 }

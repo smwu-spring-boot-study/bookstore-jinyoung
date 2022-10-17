@@ -38,24 +38,22 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                 .and()
                     .authorizeRequests() //아래부터 인증 절차 설정하겠다
                     .antMatchers(HttpMethod.OPTIONS).permitAll()
-                    .antMatchers("/h2-console/**").permitAll()
                     .antMatchers("/oauth2/**", "/api/v1/auth/**").permitAll()
+                    .antMatchers("/admin/**").hasAnyRole("ADMIN")
                      //.antMatchers(HttpMethod.GET, "/product/**").permitAll()
                     .anyRequest().authenticated(); //그외는 인증된 사용자만 접근 가능
 
-                //.antMatchers("/login").permitAll() //누구에게나 허용
-                //.antMatchers("/user").hasRole("USER") //USER권한이 있을 때만 /user접근 가능
         http
                 .oauth2Login()
                 .userInfoEndpoint() //oauth로그인 성공 후 설정 시작
                 .userService(customOAuth2Service) //custom한 oauthservice연결 -> oAuth2User반환
                 .and().successHandler(successHandler)
-                .permitAll();
+                .permitAll()
 
-        http
+                .and()
                 .exceptionHandling()
-                .accessDeniedHandler(customAccessDeniedHandler) //권한 확인 과정에서 예외 발생 시 전달
-                .authenticationEntryPoint(customAuthenticationEntryPoint);//인증 과정에서 오류 발생
+                .authenticationEntryPoint(customAuthenticationEntryPoint)//인증 과정에서 오류 발생
+                .accessDeniedHandler(customAccessDeniedHandler); //권한 확인 과정에서 예외 발생 시 전달
                 //.logout()//.logoutUrl("/logout")
                 //.logoutSuccessUrl("/").permitAll() //logout시 root로 이동
 
@@ -68,7 +66,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     public void configure(WebSecurity webSecurity){ //스프링 시큐리티(httpSecurity인증,인가) 적용 전
         webSecurity.ignoring().antMatchers("/h2-console/**", "/favicon.ico", "/v2/api-docs", "/configuration/**", "/swagger-resources/**",
-                "/swagger-ui.html", "/webjars/**", "/swagger/**");
+                "/swagger-ui.html", "/webjars/**", "/swagger/**", "/h2-console/**");
 
     }
 }

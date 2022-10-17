@@ -3,7 +3,7 @@ package SpringAPIStudy.bookstore.app.auth.config;
 import SpringAPIStudy.bookstore.app.auth.config.jwt.JwtTokenProvider;
 
 
-import SpringAPIStudy.bookstore.app.auth.config.jwt.Token;
+import SpringAPIStudy.bookstore.app.auth.dto.Token;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -34,11 +34,11 @@ public class OAuth2SuccessHandler extends SimpleUrlAuthenticationSuccessHandler 
 
     private void writeTokenResponse(HttpServletResponse response, Token token)
             throws IOException {
-        response.setContentType("text/html;charset=UTF-8");
 
-        response.addHeader("Access", token.getToken());
-        response.addHeader("Refresh", token.getRefreshToken());
         response.setContentType("application/json;charset=UTF-8");
+        response.addHeader("Nickname", token.getNickname());
+        response.addHeader("Access", token.getAccessToken());
+        response.addHeader("Refresh", token.getRefreshToken());
 
         var writer = response.getWriter();
         writer.println(objectMapper.writeValueAsString(token));

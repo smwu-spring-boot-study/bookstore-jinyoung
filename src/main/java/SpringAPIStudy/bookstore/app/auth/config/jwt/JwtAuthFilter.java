@@ -24,7 +24,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {//jwtTokenProvider를 �
     public void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
                                  FilterChain chain) throws IOException, ServletException {
 
-        String token = jwtTokenProvider.resolveToken(request); //request Header 통해 accessToken받음
+        final String token = jwtTokenProvider.resolveToken(request); //request Header 통해 accessToken받음
         log.info("[doFilterInternal] token값 추출 완료. token : {}", token);
 
         if (token != null && jwtTokenProvider.validateToken(token)) { //jwt 유효성 검사

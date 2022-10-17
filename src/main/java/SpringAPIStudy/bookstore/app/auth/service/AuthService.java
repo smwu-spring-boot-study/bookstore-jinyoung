@@ -1,29 +1,34 @@
 package SpringAPIStudy.bookstore.app.auth.service;
 
 import SpringAPIStudy.bookstore.app.auth.config.jwt.JwtTokenProvider;
-import SpringAPIStudy.bookstore.app.auth.config.jwt.Token;
+import SpringAPIStudy.bookstore.app.auth.dto.RefreshRequest;
+import SpringAPIStudy.bookstore.app.auth.dto.Token;
 import SpringAPIStudy.bookstore.app.auth.dto.CustomUserDetails;
+import SpringAPIStudy.bookstore.app.auth.entity.User;
 import SpringAPIStudy.bookstore.app.auth.respository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
-
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.server.ResponseStatusException;
 
 @Slf4j
 @Service
+@Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class AuthService {
 
     private final UserRepository userRepository;
     private final JwtTokenProvider tokenProvider;
 
-    public String refreshToken(HttpServletRequest request, HttpServletResponse response,
-                               String oldAccessToken, String oldRefreshToken) {
+    public Token refreshToken(RefreshRequest refreshRequest) {
 
-        //1. Validation Refresh Token
+        final String oldAccessToken = refreshRequest.getAccessToken();
+        final String oldRefreshToken = refreshRequest.getRefreshToken();
+
+        //1. Validate Refresh Token
         if (!tokenProvider.validateToken(oldRefreshToken)) {
             throw new RuntimeException("Not Validated Refresh Token");
         }
@@ -34,7 +39,7 @@ public class AuthService {
 
         String socialId = user.getSocialId();
 
-        //3. Match Refresh Token
+        //3. Refresh Token DB와 Match
         String savedToken = userRepository.getRefreshTokenBySocialId(socialId);
 
         if (!savedToken.equals(oldRefreshToken)) {
@@ -42,9 +47,21 @@ public class AuthService {
         }
 
         //4. JWT 갱신
-        Token token =  tokenProvider.generateToken(authentication);
-        String accessToken = token.getToken();
-        return accessToken;
+        Token token = tokenProvider.generateToken(authentication);
+        return token;
+
+    }
+
+    public Long getUserId(String socialId) {
+
+        User user = userRepository.findBysocialId(socialId)
+                .orElseThrow(()->{
+                    throw new ResponseStatusException(
+                    HttpStatus.NOT_FOUND, "사용자가 존재하지 않습니다.");}
+                );
+
+        return user.getId();
+
 
     }
 }

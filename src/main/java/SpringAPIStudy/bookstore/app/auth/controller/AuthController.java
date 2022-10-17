@@ -1,28 +1,22 @@
 package SpringAPIStudy.bookstore.app.auth.controller;
 
-import SpringAPIStudy.bookstore.app.auth.dto.AuthRequest;
-import SpringAPIStudy.bookstore.app.auth.dto.AuthResponse;
-import SpringAPIStudy.bookstore.app.auth.enums.Social;
+import SpringAPIStudy.bookstore.app.auth.dto.RefreshRequest;
+import SpringAPIStudy.bookstore.app.auth.dto.Token;
 import SpringAPIStudy.bookstore.app.auth.service.AuthService;
-import SpringAPIStudy.bookstore.app.auth.service.CustomOAuth2Service;
 import SpringAPIStudy.bookstore.app.common.dto.ApiResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.oauth2.client.registration.ClientRegistration;
-import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
-import org.springframework.security.oauth2.core.OAuth2AccessToken;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.validation.Valid;
 
 @Slf4j
 @RestController
 @RequestMapping("/api/v1/auth")
 @RequiredArgsConstructor
-public class OAuthController {
+public class AuthController {
 
     private final AuthService authService;
     //private final CustomOAuth2Service customOAuth2Service;
@@ -44,9 +38,18 @@ public class OAuthController {
     }*/
 
     @PostMapping("/refresh")
-    public ResponseEntity refreshToken(HttpServletRequest request, HttpServletResponse response,
-                                       @RequestBody String accessToken, @RequestBody String refreshToken) {
-        return ResponseEntity.ok().body(authService.refreshToken(request, response, accessToken, refreshToken));
+    public ResponseEntity<Token> refreshToken(HttpServletRequest request) {
+        final RefreshRequest refreshHeader = refreshHeader(request);
+        return ApiResponse.success(authService.refreshToken(refreshHeader));
     }
 
+    //refresh시 accesstoken, refreshtoken을 전달받음
+    private RefreshRequest refreshHeader(HttpServletRequest request) {
+        String accessToken = request.getHeader("Access");
+        String refreshToken = request.getHeader("Refresh");
+        return RefreshRequest.builder()
+                .accessToken(accessToken)
+                .refreshToken(refreshToken)
+                .build();
+    }
 }

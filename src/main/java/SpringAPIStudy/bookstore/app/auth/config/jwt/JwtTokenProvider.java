@@ -1,6 +1,7 @@
 package SpringAPIStudy.bookstore.app.auth.config.jwt;
 
 import SpringAPIStudy.bookstore.app.auth.dto.CustomUserDetails;
+import SpringAPIStudy.bookstore.app.auth.dto.Token;
 import SpringAPIStudy.bookstore.app.auth.respository.UserRepository;
 import io.jsonwebtoken.*;
 
@@ -45,14 +46,19 @@ public class JwtTokenProvider {
         CustomUserDetails user = (CustomUserDetails) authentication.getPrincipal();
 
         String socialId = user.getSocialId();
+        //String email = user.getEmail();
+        String nickname = user.getNickname();
         String role = authentication.getAuthorities().stream()
                 .map(GrantedAuthority::getAuthority)
                 .collect(Collectors.joining(","));
         Date now = new Date();
 
          Token token = new Token(
+                nickname,
                 Jwts.builder()
                         .setSubject(socialId)
+                        .claim("nickname", nickname)
+                        //.claim("email", email)
                         .claim("role", role)
                         .setIssuedAt(now)
                         .setExpiration(new Date(now.getTime() + tokenPeriod))
@@ -60,6 +66,8 @@ public class JwtTokenProvider {
                         .compact(),
                 Jwts.builder()
                         .setSubject(socialId)
+                        .claim("nickname", nickname)
+                        //.claim("email", email)
                         .claim("role", role)
                         .setIssuedAt(now)
                         .setExpiration(new Date(now.getTime() + refreshPeriod))
@@ -85,24 +93,39 @@ public class JwtTokenProvider {
         Collection<? extends GrantedAuthority> authorities =
                 Arrays.stream(claims.get("role").toString().split(","))
                         .map(SimpleGrantedAuthority::new).collect(Collectors.toList());
+        //String email = claims.get("email", String.class);
+        String nickname = claims.get("nickname", String.class);
 
-        CustomUserDetails principal = new CustomUserDetails(claims.getSubject(), "", authorities);
+        CustomUserDetails principal = new CustomUserDetails(claims.getSubject(), nickname, authorities);
         log.info("[getAuthentication] 토큰 인증 정보 조회 완료, UserDetails socialId : {}", principal.getUsername());
+        log.info("[getAuthentication] 토큰 인증 정보 조회 완료, UserDetails authorities : {}", authorities);
+        //log.info("[getAuthentication] 토큰 인증 정보 조회 완료, UserDetails email : {}", email);
+        log.info("[getAuthentication] 토큰 인증 정보 조회 완료, UserDetails nickname : {}", nickname);
         return new UsernamePasswordAuthenticationToken(principal, "", authorities);
     }
 
     public String getSocialId(String token) {
-        log.info("[getsocialId] 토큰 기반 회원 socialId 추출");
-        String info = Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token).getBody().getSubject();
-        log.info("[getsocialId] 완료, info : {}", info);
-        return info;
+        log.info("[getSocialId] 토큰 기반 회원 socialId 추출");
+        String socialId = Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token).getBody().getSubject();
+        log.info("[getSocialId] 완료, socialId : {}", socialId);
+        return socialId;
     }
+
+    public String getNickname(String token) {
+        log.info("[getNickname] 토큰 기반 회원 nickname 추출");
+        String nickname = Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token).getBody()
+                .get("nickname", String.class);
+        log.info("[getNickname] 완료, nickname : {}", nickname);
+        return nickname;
+    }
+
 
     //Client의 request 헤더 값으로 받은 토큰 값 리턴
     public String resolveToken(HttpServletRequest request) {
         log.info("[resolveToken] Http Header에서 Token 추출");
-        return request.getHeader("Auth");
+        return request.getHeader("Access");
     }
+
 
     public boolean validateToken(String token) { //받은 토큰으로 클레임의 유효기간 체크, 유효 시 true 리턴
         log.info("[validateToken] 토큰 유효성 검사");
@@ -113,6 +136,8 @@ public class JwtTokenProvider {
             return !claims.getBody()
                     .getExpiration()
                     .before(new Date());
+        } catch (SecurityException e) {
+            log.info("[validateToken] 잘못된 JWT 서명");
         } catch (ExpiredJwtException  e) {
             log.info("[validateToken] JWT 만료");
         } catch (IllegalStateException  e) {

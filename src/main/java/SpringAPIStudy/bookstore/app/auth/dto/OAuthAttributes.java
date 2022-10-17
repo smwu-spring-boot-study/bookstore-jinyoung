@@ -6,13 +6,14 @@ import SpringAPIStudy.bookstore.app.auth.enums.Social;
 import lombok.*;
 import lombok.extern.slf4j.Slf4j;
 
-import java.util.HashMap;
 import java.util.Map;
 
 @Slf4j
 @ToString
 @Getter
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
+@AllArgsConstructor
+@Builder
 public class OAuthAttributes { //provider마다 제공해주는 정보 형태가 다르기 때문에 분기 정리 클래스
     private Map<String, Object> attributes;
     private String socialId;
@@ -20,14 +21,6 @@ public class OAuthAttributes { //provider마다 제공해주는 정보 형태가
     private String nickname;
     private Social social;
 
-    @Builder
-    public OAuthAttributes(Map<String,Object> attributes, String socialId, String email, String nickname, Social social){
-        this.attributes = attributes;
-        this.socialId = socialId;
-        this.email = email;
-        this.nickname = nickname;
-        this.social = social;
-    }
 
     public static OAuthAttributes of(Social provider, Map<String,Object> attributes){
         //provider 판단 -> accessToken으로 받은 속성 클래스 저장

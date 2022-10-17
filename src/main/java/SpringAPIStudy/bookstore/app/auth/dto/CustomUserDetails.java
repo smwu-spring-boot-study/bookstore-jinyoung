@@ -3,6 +3,7 @@ package SpringAPIStudy.bookstore.app.auth.dto;
 import SpringAPIStudy.bookstore.app.auth.entity.User;
 import lombok.Data;
 import lombok.Getter;
+import lombok.ToString;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -15,15 +16,24 @@ import java.util.List;
 import java.util.Map;
 
 @Getter
-public class CustomUserDetails implements UserDetails, OAuth2User {
+@ToString
+public class CustomUserDetails implements UserDetails, OAuth2User { //권한을 담은 UserDetails
     private String socialId;
     private String email;
+    private String nickname;
     private Collection<? extends GrantedAuthority> authorities;
     private Map<String, Object> attributes;
 
-    public CustomUserDetails(String socialId, String email, Collection<? extends GrantedAuthority> authorities) {
+    public CustomUserDetails(String socialId, String email, String nickname, Collection<? extends GrantedAuthority> authorities) {
         this.socialId = socialId;
         this.email = email;
+        this.nickname = nickname;
+        this.authorities = authorities;
+    }
+
+    public CustomUserDetails(String socialId, String nickname, Collection<? extends GrantedAuthority> authorities) {
+        this.socialId = socialId;
+        this.nickname = nickname;
         this.authorities = authorities;
     }
 
@@ -33,7 +43,7 @@ public class CustomUserDetails implements UserDetails, OAuth2User {
 
         return new CustomUserDetails(
                 user.getSocialId(),
-                user.getEmail(),
+                user.getNickname(),
                 authorities
         );
     }
