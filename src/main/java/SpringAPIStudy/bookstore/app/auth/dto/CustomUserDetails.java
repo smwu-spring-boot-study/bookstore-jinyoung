@@ -1,14 +1,12 @@
 package SpringAPIStudy.bookstore.app.auth.dto;
 
-import SpringAPIStudy.bookstore.app.auth.entity.User;
-import lombok.Data;
+import SpringAPIStudy.bookstore.app.user.entity.User;
 import lombok.Getter;
 import lombok.ToString;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.oauth2.core.user.OAuth2User;
-import org.springframework.stereotype.Component;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -18,6 +16,7 @@ import java.util.Map;
 @Getter
 @ToString
 public class CustomUserDetails implements UserDetails, OAuth2User { //권한을 담은 UserDetails
+
     private String socialId;
     private String email;
     private String nickname;

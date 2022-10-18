@@ -4,15 +4,17 @@ import SpringAPIStudy.bookstore.app.auth.config.jwt.JwtTokenProvider;
 import SpringAPIStudy.bookstore.app.auth.dto.RefreshRequest;
 import SpringAPIStudy.bookstore.app.auth.dto.Token;
 import SpringAPIStudy.bookstore.app.auth.dto.CustomUserDetails;
-import SpringAPIStudy.bookstore.app.auth.entity.User;
-import SpringAPIStudy.bookstore.app.auth.respository.UserRepository;
+import SpringAPIStudy.bookstore.app.user.entity.User;
+import SpringAPIStudy.bookstore.app.user.repository.UserRepository;
+import io.jsonwebtoken.JwtException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.server.ResponseStatusException;
+
+import javax.validation.Valid;
+import java.util.NoSuchElementException;
 
 @Slf4j
 @Service
@@ -23,14 +25,14 @@ public class AuthService {
     private final UserRepository userRepository;
     private final JwtTokenProvider tokenProvider;
 
-    public Token refreshToken(RefreshRequest refreshRequest) {
+    public Token refreshToken(@Valid RefreshRequest refreshRequest) { //access토큰 만료 시 클라가 요청
 
         final String oldAccessToken = refreshRequest.getAccessToken();
         final String oldRefreshToken = refreshRequest.getRefreshToken();
 
         //1. Validate Refresh Token
-        if (!tokenProvider.validateToken(oldRefreshToken)) {
-            throw new RuntimeException("Not Validated Refresh Token");
+        if (!tokenProvider.validateToken(oldRefreshToken)) { //둘 다 만료 -> 재로그인 필요
+            throw new JwtException("JWT Expired");
         }
 
         //2. 유저 정보 얻기
@@ -43,7 +45,7 @@ public class AuthService {
         String savedToken = userRepository.getRefreshTokenBySocialId(socialId);
 
         if (!savedToken.equals(oldRefreshToken)) {
-            throw new RuntimeException("Not Matched Refresh Token");
+            throw new JwtException("Refresh Token Not Matched");
         }
 
         //4. JWT 갱신
@@ -55,13 +57,9 @@ public class AuthService {
     public Long getUserId(String socialId) {
 
         User user = userRepository.findBysocialId(socialId)
-                .orElseThrow(()->{
-                    throw new ResponseStatusException(
-                    HttpStatus.NOT_FOUND, "사용자가 존재하지 않습니다.");}
-                );
+                .orElseThrow(()->{ throw new NoSuchElementException("User Not Found");});
 
         return user.getId();
-
 
     }
 }

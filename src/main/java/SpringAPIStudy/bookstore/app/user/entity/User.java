@@ -1,4 +1,4 @@
-package SpringAPIStudy.bookstore.app.auth.entity;
+package SpringAPIStudy.bookstore.app.user.entity;
 
 import SpringAPIStudy.bookstore.app.common.entity.BaseTimeEntity;
 import SpringAPIStudy.bookstore.app.auth.enums.Role;

@@ -1,9 +1,6 @@
 package SpringAPIStudy.bookstore.app.auth.config;
 
-import SpringAPIStudy.bookstore.app.auth.config.jwt.CustomAccessDeniedHandler;
-import SpringAPIStudy.bookstore.app.auth.config.jwt.CustomAuthenticationEntryPoint;
-import SpringAPIStudy.bookstore.app.auth.config.jwt.JwtAuthFilter;
-import SpringAPIStudy.bookstore.app.auth.config.jwt.JwtTokenProvider;
+import SpringAPIStudy.bookstore.app.auth.config.jwt.*;
 import SpringAPIStudy.bookstore.app.auth.service.CustomOAuth2Service;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Configuration;
@@ -28,6 +25,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     private final CustomAccessDeniedHandler customAccessDeniedHandler;
     private final CustomAuthenticationEntryPoint customAuthenticationEntryPoint;
 
+    private final ExceptionHandlerFilter exceptionHandlerFilter;
 
     @Override
     protected void configure(HttpSecurity http) throws Exception {
@@ -37,8 +35,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                     .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS) //세션 관리x
                 .and()
                     .authorizeRequests() //아래부터 인증 절차 설정하겠다
-                    .antMatchers(HttpMethod.OPTIONS).permitAll()
-                    .antMatchers("/oauth2/**", "/api/v1/auth/**").permitAll()
+                    //.antMatchers(HttpMethod.OPTIONS).permitAll()
+                    .antMatchers("/oauth2/**", "/api/v1/auth/**", "/h2-console/**", "/favicon.ico", "/v2/api-docs",
+                            "/configuration/**", "/swagger*/**","/swagger-ui.html", "/webjars/**", "/swagger/**", "/h2-console/**").permitAll()
                     .antMatchers("/admin/**").hasAnyRole("ADMIN")
                      //.antMatchers(HttpMethod.GET, "/product/**").permitAll()
                     .anyRequest().authenticated(); //그외는 인증된 사용자만 접근 가능
@@ -59,6 +58,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
 
         http.addFilterBefore(new JwtAuthFilter(jwtTokenProvider), UsernamePasswordAuthenticationFilter.class);
+        http.addFilterBefore(exceptionHandlerFilter, JwtAuthFilter.class);
         //SpringSecurity의 UsernamePasswordAuthFilter가 실행되기 전 JwtAuthFilter먼저 실행
         //http.addFilterAfter(new JwtAuthFilter(jwtTokenProvider), LogoutFilter.class);
     }

@@ -1,9 +1,6 @@
 package SpringAPIStudy.bookstore.app.auth.config.jwt;
 
-import SpringAPIStudy.bookstore.app.auth.dto.AuthResponse;
 import SpringAPIStudy.bookstore.app.common.dto.ApiResponse;
-import SpringAPIStudy.bookstore.app.common.dto.ErrorResponse;
-import SpringAPIStudy.bookstore.app.common.dto.ResponseData;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
@@ -27,15 +24,12 @@ public class CustomAccessDeniedHandler implements AccessDeniedHandler { //권한
         ObjectMapper objectMapper = new ObjectMapper();
         log.info("[handle] 권한 없는 요청입니다.");
 
-        ErrorResponse entryPointErrorResponse = new ErrorResponse();
-        entryPointErrorResponse.setStatus(HttpStatus.FORBIDDEN);
-        entryPointErrorResponse.setMsg("권한 없는 요청입니다.");
+        ApiResponse<Exception> apiResponse= ApiResponse.fail(HttpStatus.FORBIDDEN);
 
         response.setStatus(HttpServletResponse.SC_FORBIDDEN);
         response.setContentType("application/json;charset=UTF-8");
-        //response.getWriter().write(objectMapper.writeValueAsString(entryPointErrorResponse));
         var writer = response.getWriter();
-        writer.println(objectMapper.writeValueAsString(entryPointErrorResponse));
+        writer.println(objectMapper.writeValueAsString(apiResponse));
         writer.flush();
     }
 }

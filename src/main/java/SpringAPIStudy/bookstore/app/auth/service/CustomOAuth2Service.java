@@ -2,12 +2,11 @@ package SpringAPIStudy.bookstore.app.auth.service;
 
 import SpringAPIStudy.bookstore.app.auth.dto.CustomUserDetails;
 import SpringAPIStudy.bookstore.app.auth.dto.OAuthAttributes;
-import SpringAPIStudy.bookstore.app.auth.entity.User;
-import SpringAPIStudy.bookstore.app.auth.respository.UserRepository;
+import SpringAPIStudy.bookstore.app.user.entity.User;
+import SpringAPIStudy.bookstore.app.user.repository.UserRepository;
 import SpringAPIStudy.bookstore.app.auth.enums.Social;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserService;
@@ -17,6 +16,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Map;
+import java.util.Optional;
 
 @Slf4j
 @Service
@@ -60,10 +60,14 @@ public class CustomOAuth2Service implements OAuth2UserService<OAuth2UserRequest,
     //회원가입 혹은 로그인
     private User joinOrLogin(OAuthAttributes attributes) {
         log.info("[saveOrUpdate] socialid: {}", attributes.getSocialId());
-        User user = userRepository.findBysocialId(attributes.getSocialId())
-                .orElse(userRepository.save(attributes.toEntity()));
-                 //없으면 새로 생성
-        return user;
+        Optional<User> optionalUser = userRepository.findBysocialId(attributes.getSocialId());
+        User user;
+        if (optionalUser.isPresent()) {
+            return optionalUser.get();
+        } else  {
+            user = attributes.toEntity();
+            return userRepository.save(user); //없으면 새로 생성
+        }
     }
 
 }

@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.validation.Valid;
 
 @Slf4j
 @RestController
@@ -19,26 +20,9 @@ import javax.servlet.http.HttpServletResponse;
 public class AuthController {
 
     private final AuthService authService;
-    //private final CustomOAuth2Service customOAuth2Service;
-
-    /*@GetMapping(value = "/{social}/login")
-    public ApiResponse<AuthResponse> socialAuthRequest(@PathVariable("social") Social social,
-                                                       @Valid @RequestBody AuthRequest authRequest) {
-        customOAuth2Service.loadUser((new OAuth2UserRequest(
-                ClientRegistration.withRegistrationId(String.valueOf(authRequest.getSocial())).build(),
-                OAuth2AccessToken.
-                        authRequest.getAuthToken())));
-        return ApiResponse.success(AuthResponse.builder()
-                .userId()
-                .nickname()
-                .accessToken()
-                .refreshToken()
-                .build()
-        );
-    }*/
 
     @PostMapping("/refresh")
-    public ResponseEntity<Token> refreshToken(HttpServletRequest request) {
+    public ApiResponse<Token> refreshToken(HttpServletRequest request) {
         final RefreshRequest refreshHeader = refreshHeader(request);
         return ApiResponse.success(authService.refreshToken(refreshHeader));
     }

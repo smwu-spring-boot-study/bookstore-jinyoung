@@ -2,7 +2,7 @@ package SpringAPIStudy.bookstore.app.auth.config.jwt;
 
 import SpringAPIStudy.bookstore.app.auth.dto.CustomUserDetails;
 import SpringAPIStudy.bookstore.app.auth.dto.Token;
-import SpringAPIStudy.bookstore.app.auth.respository.UserRepository;
+import SpringAPIStudy.bookstore.app.user.repository.UserRepository;
 import io.jsonwebtoken.*;
 
 import lombok.RequiredArgsConstructor;
@@ -65,10 +65,6 @@ public class JwtTokenProvider {
                         .signWith(SignatureAlgorithm.HS256, secretKey) //암호화 알고리즘, secretKey세팅
                         .compact(),
                 Jwts.builder()
-                        .setSubject(socialId)
-                        .claim("nickname", nickname)
-                        //.claim("email", email)
-                        .claim("role", role)
                         .setIssuedAt(now)
                         .setExpiration(new Date(now.getTime() + refreshPeriod))
                         .signWith(SignatureAlgorithm.HS256, secretKey)
@@ -136,16 +132,14 @@ public class JwtTokenProvider {
             return !claims.getBody()
                     .getExpiration()
                     .before(new Date());
-        } catch (SecurityException e) {
-            log.info("[validateToken] 잘못된 JWT 서명");
-        } catch (ExpiredJwtException  e) {
-            log.info("[validateToken] JWT 만료");
-        } catch (IllegalStateException  e) {
-            log.info("[validateToken] 잘못된 JWT 토큰");
+        } catch (ExpiredJwtException e) {
+            throw new JwtException("JWT Expired");
+        } catch (IllegalStateException e) {
+            throw new JwtException("JWT Wrong");
         } catch (Exception e) {
             log.info("[validateToken] 토큰 유효성 검사 예외 발생");
+            throw new JwtException("[validateToken] Error");
         }
-        return false;
     }
 
     // Access Token 만료시 갱신때 사용할 정보를 얻기 위해 Claim 리턴
@@ -154,6 +148,8 @@ public class JwtTokenProvider {
             return Jwts.parser().setSigningKey(secretKey).parseClaimsJws(accessToken).getBody();
         } catch (ExpiredJwtException e) {
             return e.getClaims();
+        } catch (Exception e) {
+            throw new JwtException("JWT Parse Failed");
         }
     }
 

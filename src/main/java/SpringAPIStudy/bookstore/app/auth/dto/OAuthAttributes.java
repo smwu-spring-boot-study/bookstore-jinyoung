@@ -1,6 +1,6 @@
 package SpringAPIStudy.bookstore.app.auth.dto;
 
-import SpringAPIStudy.bookstore.app.auth.entity.User;
+import SpringAPIStudy.bookstore.app.user.entity.User;
 import SpringAPIStudy.bookstore.app.auth.enums.Role;
 import SpringAPIStudy.bookstore.app.auth.enums.Social;
 import lombok.*;

@@ -2,6 +2,8 @@ package SpringAPIStudy.bookstore.app.auth.dto;
 
 import lombok.*;
 
+import javax.validation.constraints.NotNull;
+
 @ToString
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter

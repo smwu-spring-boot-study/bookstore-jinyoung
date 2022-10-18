@@ -1,41 +1,47 @@
 package SpringAPIStudy.bookstore.app.common.dto;
 
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 
-@Getter
-@NoArgsConstructor(access = AccessLevel.PRIVATE)
+@Data
+@AllArgsConstructor
 public class ApiResponse<T> {
 
-    public static <T> ResponseEntity<T> success(T body) { //200
-        return ResponseEntity.status(HttpStatus.OK).body(body);
+    private int code; //200, 400 ...
+    private T data;
+    private String msg; //err내용
+
+    public static <T> ApiResponse<T> success(T body) { //200
+        return new ApiResponse<T>(HttpStatus.OK.value(), body,null);
     }
 
-    public static <T> ResponseEntity<T> created(T body) { //201
-        return ResponseEntity.status(HttpStatus.CREATED).body(body);
+    public static <T> ApiResponse<T> created(T body) { //201
+        return new ApiResponse<T>(HttpStatus.CREATED.value(), body,null);
     }
 
-    public static <T> ResponseEntity<T> badRequest(T body) { //400
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(body);
+    public static <T> ApiResponse<T> badRequest(Exception e) { //400
+        return new ApiResponse(HttpStatus.BAD_REQUEST.value(), null, e.getMessage());
     }
 
-    public static <T> ResponseEntity<T> unAuthorized(T body) { //401
-        return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(body);
+    public static <T> ApiResponse<T> unAuthorized(Exception e) { //401
+        return new ApiResponse(HttpStatus.UNAUTHORIZED.value(), null, e.getMessage());
     }
 
-    public static <T> ResponseEntity<T> forbidden(T body) { //403
-        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(body);
+    public static <T> ApiResponse<T> forbidden(Exception e) { //403
+        return new ApiResponse(HttpStatus.FORBIDDEN.value(), null, e.getMessage());
     }
 
-    public static <T> ResponseEntity<T> notFound(T body) { //404
-        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(body);
+    public static <T> ApiResponse<T> notFound(Exception e) { //404
+        return new ApiResponse(HttpStatus.NOT_FOUND.value(), null, e.getMessage());
     }
 
-    public static <T> ResponseEntity<T> internalServerError(T body) { //500
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(body);
+    public static <T> ApiResponse<T> internalServerError(Exception e) { //500
+        return new ApiResponse(HttpStatus.INTERNAL_SERVER_ERROR.value(), null, e.getMessage());
     }
+
+    public static <T> ApiResponse<T> fail(HttpStatus httpStatus) {
+        return new ApiResponse(httpStatus.value(), null, httpStatus.getReasonPhrase());
+    }
+
 
 }
