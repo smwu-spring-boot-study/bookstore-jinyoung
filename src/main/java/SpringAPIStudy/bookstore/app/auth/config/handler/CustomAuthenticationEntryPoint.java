@@ -1,4 +1,4 @@
-package SpringAPIStudy.bookstore.app.auth.config.jwt;
+package SpringAPIStudy.bookstore.app.auth.config.handler;
 
 import SpringAPIStudy.bookstore.app.common.dto.ApiResponse;
 import com.fasterxml.jackson.databind.ObjectMapper;

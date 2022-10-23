@@ -1,4 +1,4 @@
-package SpringAPIStudy.bookstore.app.auth.config.jwt;
+package SpringAPIStudy.bookstore.app.auth.config.filter;
 
 import SpringAPIStudy.bookstore.app.common.dto.ApiResponse;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -19,7 +19,6 @@ import java.io.IOException;
 @RequiredArgsConstructor
 public class ExceptionHandlerFilter extends OncePerRequestFilter {
 
-
     private final ObjectMapper objectMapper;
 
     @Override
@@ -29,6 +28,9 @@ public class ExceptionHandlerFilter extends OncePerRequestFilter {
         } catch (JwtException e){
             log.error("[ExceptionHandlerFilter] JwtException");
             setExceptionResponse(response, ApiResponse.unAuthorized(e));
+        } catch (Exception e){
+            log.error("[ExceptionHandlerFilter] Exception");
+            setExceptionResponse(response, ApiResponse.internalServerError(e));
         }
     }
 

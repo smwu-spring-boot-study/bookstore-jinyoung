@@ -1,6 +1,7 @@
 package SpringAPIStudy.bookstore.app.auth.service;
 
 import SpringAPIStudy.bookstore.app.auth.config.jwt.JwtTokenProvider;
+import SpringAPIStudy.bookstore.app.auth.config.jwt.JwtValidation;
 import SpringAPIStudy.bookstore.app.auth.dto.RefreshRequest;
 import SpringAPIStudy.bookstore.app.auth.dto.Token;
 import SpringAPIStudy.bookstore.app.auth.dto.CustomUserDetails;
@@ -31,7 +32,7 @@ public class AuthService {
         final String oldRefreshToken = refreshRequest.getRefreshToken();
 
         //1. Validate Refresh Token
-        if (!tokenProvider.validateToken(oldRefreshToken)) { //둘 다 만료 -> 재로그인 필요
+        if (!JwtValidation.validateToken(oldRefreshToken)) { //둘 다 만료 -> 재로그인 필요
             throw new JwtException("JWT Expired");
         }
 

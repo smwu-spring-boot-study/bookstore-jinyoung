@@ -83,7 +83,7 @@ public class JwtTokenProvider {
 
     //AccessToken 검사 정보로 Authentication 객체 생성
     public Authentication getAuthentication(String accessToken) { //filter에서 인증 성공 시 SecurityContext에 저장할 Authentication 생성
-        Claims claims = parseClaims(accessToken);
+        Claims claims = JwtValidation.parseClaims(accessToken);
 
         log.info("[getAuthentication] 토큰 인증 정보 조회 시작");
         Collection<? extends GrantedAuthority> authorities =
@@ -119,38 +119,8 @@ public class JwtTokenProvider {
     //Client의 request 헤더 값으로 받은 토큰 값 리턴
     public String resolveToken(HttpServletRequest request) {
         log.info("[resolveToken] Http Header에서 Token 추출");
-        return request.getHeader("Access");
+        return request.getHeader("Authorization");
     }
 
-
-    public boolean validateToken(String token) { //받은 토큰으로 클레임의 유효기간 체크, 유효 시 true 리턴
-        log.info("[validateToken] 토큰 유효성 검사");
-        try {
-            Jws<Claims> claims = Jwts.parser()
-                    .setSigningKey(secretKey)
-                    .parseClaimsJws(token);
-            return !claims.getBody()
-                    .getExpiration()
-                    .before(new Date());
-        } catch (ExpiredJwtException e) {
-            throw new JwtException("JWT Expired");
-        } catch (IllegalStateException e) {
-            throw new JwtException("JWT Wrong");
-        } catch (Exception e) {
-            log.info("[validateToken] 토큰 유효성 검사 예외 발생");
-            throw new JwtException("[validateToken] Error");
-        }
-    }
-
-    // Access Token 만료시 갱신때 사용할 정보를 얻기 위해 Claim 리턴
-    private Claims parseClaims(String accessToken) {
-        try {
-            return Jwts.parser().setSigningKey(secretKey).parseClaimsJws(accessToken).getBody();
-        } catch (ExpiredJwtException e) {
-            return e.getClaims();
-        } catch (Exception e) {
-            throw new JwtException("JWT Parse Failed");
-        }
-    }
 
 }

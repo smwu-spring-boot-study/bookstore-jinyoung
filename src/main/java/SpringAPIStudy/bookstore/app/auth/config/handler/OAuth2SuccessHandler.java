@@ -1,4 +1,4 @@
-package SpringAPIStudy.bookstore.app.auth.config;
+package SpringAPIStudy.bookstore.app.auth.config.handler;
 
 import SpringAPIStudy.bookstore.app.auth.config.jwt.JwtTokenProvider;
 

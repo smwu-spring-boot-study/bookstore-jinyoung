@@ -1,5 +1,7 @@
-package SpringAPIStudy.bookstore.app.auth.config.jwt;
+package SpringAPIStudy.bookstore.app.auth.config.filter;
 
+import SpringAPIStudy.bookstore.app.auth.config.jwt.JwtTokenProvider;
+import SpringAPIStudy.bookstore.app.auth.config.jwt.JwtValidation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.Authentication;
@@ -24,24 +26,18 @@ public class JwtAuthFilter extends OncePerRequestFilter {//jwtTokenProvider를 �
     public void doFilterInternal(HttpServletRequest request, HttpServletResponse response,
                                  FilterChain chain) throws IOException, ServletException {
 
-        if(request.getServletPath().equals("/api/v1/auth/refresh")) { //만료된 accessToken, refreshToken Header
-            chain.doFilter(request, response);
-        }
-        else {
-            final String token = jwtTokenProvider.resolveToken(request); //request Header 통해 accessToken받음
-            log.info("[doFilterInternal] token값 추출 완료. token : {}", token);
+        final String token = jwtTokenProvider.resolveToken(request); //request Header 통해 accessToken받음
+        log.info("[doFilterInternal] token값 추출 완료. token : {}", token);
 
-            if (token != null) {
-                if (jwtTokenProvider.validateToken(token)) { //jwt 유효성 검사 통과
-                    //jwt인증 성공 시 SecurityContext에 해당 userDetails, 권한 정보 저장
-                    Authentication auth = jwtTokenProvider.getAuthentication(token);
-                    SecurityContextHolder.getContext().setAuthentication(auth);
-                    log.info("[doFilterInternal] {}의 인증 정보 저장", auth.getName());
-                }
-                chain.doFilter(request, response);
+        if (token != null) {
+            if (JwtValidation.validateToken(token)) { //jwt 유효성 검사 통과
+                //jwt인증 성공 시 SecurityContext에 해당 userDetails, 권한 정보 저장
+                Authentication auth = jwtTokenProvider.getAuthentication(token);
+                SecurityContextHolder.getContext().setAuthentication(auth);
+                log.info("[doFilterInternal] {}의 인증 정보 저장", auth.getName());
             }
         }
-
+        chain.doFilter(request, response);
     }
 
 }
