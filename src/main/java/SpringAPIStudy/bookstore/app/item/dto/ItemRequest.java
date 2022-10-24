@@ -1,7 +1,7 @@
 package SpringAPIStudy.bookstore.app.item.dto;
 
+import SpringAPIStudy.bookstore.app.common.utils.CustomObjectMapper;
 import SpringAPIStudy.bookstore.app.item.entity.Item;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.*;
 
 import javax.validation.constraints.Min;
@@ -33,10 +33,9 @@ public class ItemRequest {
     @Min(0)
     private int stock;
 
-    private static ObjectMapper objectMapper = new ObjectMapper();
 
     public static ItemRequest of(Item item) { //Entity->Dto
-        return objectMapper.convertValue(item, ItemRequest.class);
+        return CustomObjectMapper.objectMapper.convertValue(item, ItemRequest.class);
     }
 
 

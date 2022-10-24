@@ -1,9 +1,7 @@
 package SpringAPIStudy.bookstore.app.item.dto;
 
+import SpringAPIStudy.bookstore.app.common.utils.CustomObjectMapper;
 import SpringAPIStudy.bookstore.app.item.entity.Item;
-import com.fasterxml.jackson.databind.DeserializationFeature;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import lombok.*;
 
 
@@ -30,12 +28,8 @@ public class DetailItemResponse {
     @NotNull
     private int price;
 
-    private static ObjectMapper objectMapper = new ObjectMapper()
-            .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false) //생성될 object에는 없는 필드는 옮기지 않는다
-            .registerModule(new JavaTimeModule());
-
     public static DetailItemResponse of(Item item) { //Entity->Dto
-        return objectMapper.convertValue(item, DetailItemResponse.class);
+        return CustomObjectMapper.objectMapper.convertValue(item, DetailItemResponse.class);
     }
 
 }

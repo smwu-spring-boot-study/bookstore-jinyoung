@@ -1,8 +1,8 @@
 package SpringAPIStudy.bookstore.app.item.entity;
 
 import SpringAPIStudy.bookstore.app.common.entity.BaseTimeEntity;
+import SpringAPIStudy.bookstore.app.common.utils.CustomObjectMapper;
 import SpringAPIStudy.bookstore.app.item.enums.ItemStatus;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.*;
 
 import javax.persistence.*;
@@ -85,9 +85,7 @@ public class Item extends BaseTimeEntity {
         this.setStock(item.getStock());
     }
 
-    private static ObjectMapper objectMapper = new ObjectMapper();
-
     public static Item of(Object o){ //Entity<-Dto
-        return objectMapper.convertValue(o, Item.class);
+        return CustomObjectMapper.objectMapper.convertValue(o, Item.class);
     }
 }
