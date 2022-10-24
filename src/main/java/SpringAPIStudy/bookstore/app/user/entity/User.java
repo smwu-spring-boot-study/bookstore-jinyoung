@@ -13,7 +13,7 @@ import javax.persistence.*;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @ToString(callSuper = true)
 @EqualsAndHashCode(callSuper = true)
-@Table(name = "tb_user")
+@Table(name = "user_tb")
 public class User extends BaseTimeEntity {
 
     @Id

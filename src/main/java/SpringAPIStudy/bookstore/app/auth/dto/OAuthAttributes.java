@@ -61,13 +61,13 @@ public class OAuthAttributes { //provider마다 제공해주는 정보 형태가
                 .build();
     }
 
-    public User toEntity(){ //User Entity를 리턴
+    public User toEntity(Role role){ //User Entity를 리턴
         return User.builder()
                 .socialId(socialId)
                 .social(social)
                 .nickname(nickname)
                 .email(email)
-                .role(Role.USER)
+                .role(role)
                 .build();
     }
 }

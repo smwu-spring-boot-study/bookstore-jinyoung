@@ -2,11 +2,13 @@ package SpringAPIStudy.bookstore.app.auth.service;
 
 import SpringAPIStudy.bookstore.app.auth.dto.CustomUserDetails;
 import SpringAPIStudy.bookstore.app.auth.dto.OAuthAttributes;
+import SpringAPIStudy.bookstore.app.auth.enums.Role;
 import SpringAPIStudy.bookstore.app.user.entity.User;
 import SpringAPIStudy.bookstore.app.user.repository.UserRepository;
 import SpringAPIStudy.bookstore.app.auth.enums.Social;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserService;
@@ -15,17 +17,20 @@ import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Arrays;
 import java.util.Map;
 import java.util.Optional;
 
 @Slf4j
 @Service
-@Transactional
+@Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class CustomOAuth2Service implements OAuth2UserService<OAuth2UserRequest, OAuth2User> {
 
     private final UserRepository userRepository;
 
+    @Value("${admin.email}")
+    private String[] adminList;
     @Override
     public OAuth2User loadUser(OAuth2UserRequest userRequest) throws OAuth2AuthenticationException {//userRequest: registrationId, accessToken
 
@@ -58,6 +63,7 @@ public class CustomOAuth2Service implements OAuth2UserService<OAuth2UserRequest,
     }
 
     //회원가입 혹은 로그인
+    @Transactional
     private User joinOrLogin(OAuthAttributes attributes) {
         log.info("[saveOrUpdate] socialid: {}", attributes.getSocialId());
         Optional<User> optionalUser = userRepository.findBysocialId(attributes.getSocialId());
@@ -65,7 +71,8 @@ public class CustomOAuth2Service implements OAuth2UserService<OAuth2UserRequest,
         if (optionalUser.isPresent()) {
             return optionalUser.get();
         } else  {
-            user = attributes.toEntity();
+            if (Arrays.asList(adminList).contains(attributes.getEmail())) user = attributes.toEntity(Role.ADMIN);
+            else user = attributes.toEntity(Role.USER);
             return userRepository.save(user); //없으면 새로 생성
         }
     }

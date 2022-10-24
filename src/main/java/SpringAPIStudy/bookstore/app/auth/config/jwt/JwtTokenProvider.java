@@ -24,7 +24,7 @@ import java.util.stream.Collectors;
 @Slf4j
 @Component
 @RequiredArgsConstructor
-@Transactional
+@Transactional(readOnly = true)
 public class JwtTokenProvider {
 
     private final UserRepository userRepository;
@@ -46,7 +46,6 @@ public class JwtTokenProvider {
         CustomUserDetails user = (CustomUserDetails) authentication.getPrincipal();
 
         String socialId = user.getSocialId();
-        //String email = user.getEmail();
         String nickname = user.getNickname();
         String role = authentication.getAuthorities().stream()
                 .map(GrantedAuthority::getAuthority)
@@ -58,7 +57,6 @@ public class JwtTokenProvider {
                 Jwts.builder()
                         .setSubject(socialId)
                         .claim("nickname", nickname)
-                        //.claim("email", email)
                         .claim("role", role)
                         .setIssuedAt(now)
                         .setExpiration(new Date(now.getTime() + tokenPeriod))
@@ -74,6 +72,7 @@ public class JwtTokenProvider {
         return token;
     }
 
+    @Transactional
     private void saveRefreshToken(Authentication authentication, String refreshToken) {
         CustomUserDetails user = (CustomUserDetails) authentication.getPrincipal();
         String socialId = user.getName();
@@ -89,13 +88,11 @@ public class JwtTokenProvider {
         Collection<? extends GrantedAuthority> authorities =
                 Arrays.stream(claims.get("role").toString().split(","))
                         .map(SimpleGrantedAuthority::new).collect(Collectors.toList());
-        //String email = claims.get("email", String.class);
         String nickname = claims.get("nickname", String.class);
 
         CustomUserDetails principal = new CustomUserDetails(claims.getSubject(), nickname, authorities);
         log.info("[getAuthentication] 토큰 인증 정보 조회 완료, UserDetails socialId : {}", principal.getUsername());
         log.info("[getAuthentication] 토큰 인증 정보 조회 완료, UserDetails authorities : {}", authorities);
-        //log.info("[getAuthentication] 토큰 인증 정보 조회 완료, UserDetails email : {}", email);
         log.info("[getAuthentication] 토큰 인증 정보 조회 완료, UserDetails nickname : {}", nickname);
         return new UsernamePasswordAuthenticationToken(principal, "", authorities);
     }
@@ -105,14 +102,6 @@ public class JwtTokenProvider {
         String socialId = Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token).getBody().getSubject();
         log.info("[getSocialId] 완료, socialId : {}", socialId);
         return socialId;
-    }
-
-    public String getNickname(String token) {
-        log.info("[getNickname] 토큰 기반 회원 nickname 추출");
-        String nickname = Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token).getBody()
-                .get("nickname", String.class);
-        log.info("[getNickname] 완료, nickname : {}", nickname);
-        return nickname;
     }
 
 

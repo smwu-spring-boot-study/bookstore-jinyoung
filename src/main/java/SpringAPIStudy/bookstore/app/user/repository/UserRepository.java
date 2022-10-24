@@ -10,10 +10,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Optional;
 
-@Repository
 public interface UserRepository extends JpaRepository<User, Long> {
 
-    Optional<User> findById(Long id);
+    User getById(Long id);
 
     Optional<User> findBysocialId(String socialId);
 

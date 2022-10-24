@@ -14,7 +14,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.validation.Valid;
+
 import java.util.NoSuchElementException;
 
 @Slf4j
@@ -26,7 +26,7 @@ public class AuthService {
     private final UserRepository userRepository;
     private final JwtTokenProvider tokenProvider;
 
-    public Token refreshToken(@Valid RefreshRequest refreshRequest) { //access토큰 만료 시 클라가 요청
+    public Token refreshToken(RefreshRequest refreshRequest) { //access토큰 만료 시 클라가 요청
 
         final String oldAccessToken = refreshRequest.getAccessToken();
         final String oldRefreshToken = refreshRequest.getRefreshToken();

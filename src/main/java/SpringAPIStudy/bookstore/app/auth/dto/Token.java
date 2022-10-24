@@ -2,10 +2,10 @@ package SpringAPIStudy.bookstore.app.auth.dto;
 
 import lombok.*;
 
-import javax.validation.constraints.NotNull;
 
 @ToString
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor
 @Getter
 public class Token {
 
@@ -13,9 +13,4 @@ public class Token {
     private String accessToken;
     private String refreshToken;
 
-    public Token(String nickname, String accessToken, String refreshToken) {
-        this.nickname = nickname;
-        this.accessToken = accessToken;
-        this.refreshToken = refreshToken;
-    }
 }

@@ -1,5 +1,6 @@
 package SpringAPIStudy.bookstore.app.auth.dto;
 
+import SpringAPIStudy.bookstore.app.auth.enums.Role;
 import SpringAPIStudy.bookstore.app.user.entity.User;
 import lombok.Getter;
 import lombok.ToString;
@@ -37,8 +38,11 @@ public class CustomUserDetails implements UserDetails, OAuth2User { //권한을 
     }
 
     public static CustomUserDetails create(User user) {
+        String role;
+        if (user.getRole().equals(Role.ADMIN)) {role = Role.ADMIN.getKey();}
+        else { role = Role.ADMIN.getKey(); }
         List<GrantedAuthority> authorities = Collections.
-                singletonList(new SimpleGrantedAuthority("ROLE_USER"));
+                singletonList(new SimpleGrantedAuthority(role));
 
         return new CustomUserDetails(
                 user.getSocialId(),
