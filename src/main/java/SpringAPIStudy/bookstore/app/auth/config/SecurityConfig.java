@@ -33,11 +33,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     private final JwtAuthFilter jwtAuthFilter;
 
-
     @Override
     public void configure(WebSecurity webSecurity) throws Exception{ //스프링 시큐리티(httpSecurity인증,인가) 적용 전
-        webSecurity.ignoring().antMatchers("/h2-console/**", "/favicon.ico", "/v2/api-docs", "/configuration/**",
-                 "/webjars/**", "/swagger*/**", "/h2-console/**");
+        webSecurity.ignoring().antMatchers("/h2-console/**", "/favicon.ico", "/v3/api-docs/**", "/configuration/**",
+                 "/webjars/**", "/swagger-ui/**","/swagger**", "/h2-console/**");
 
     }
 

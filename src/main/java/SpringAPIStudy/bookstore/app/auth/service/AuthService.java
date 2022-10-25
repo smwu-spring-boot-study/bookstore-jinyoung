@@ -10,12 +10,15 @@ import SpringAPIStudy.bookstore.app.user.repository.UserRepository;
 import io.jsonwebtoken.JwtException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.NoSuchElementException;
+import java.util.concurrent.TimeUnit;
 
 @Slf4j
 @Service
@@ -25,6 +28,8 @@ public class AuthService {
 
     private final UserRepository userRepository;
     private final JwtTokenProvider tokenProvider;
+    private final RedisTemplate redisTemplate;
+
 
     public Token refreshToken(RefreshRequest refreshRequest) { //access토큰 만료 시 클라가 요청
 
@@ -37,6 +42,10 @@ public class AuthService {
         }
 
         //2. 유저 정보 얻기
+        if (!tokenProvider.checkBlackList(oldAccessToken)) { //탈퇴/로그아웃한 유저
+            throw new JwtException("Must SignUp or SignIn to Refresh AccessToken");
+        }
+
         Authentication authentication = tokenProvider.getAuthentication(oldAccessToken);
         CustomUserDetails user = (CustomUserDetails) authentication.getPrincipal();
 
@@ -53,6 +62,19 @@ public class AuthService {
         Token token = tokenProvider.generateToken(authentication);
         return token;
 
+    }
+
+    @Transactional
+    public Long logout(HttpServletRequest request) { //refreshToken비움 & accessToken만료시킴(redis통해)
+        final String accessToken = tokenProvider.resolveToken(request);
+        final String socialId = tokenProvider.getSocialId(accessToken);
+
+        Long expiration = tokenProvider.getExpiration(accessToken);
+        redisTemplate.opsForValue() //JWT Expiration될 때까지 Redis에 저장 -> accessToken만료
+                .set(accessToken, "logout", expiration, TimeUnit.MILLISECONDS);
+        userRepository.updateRefreshToken(socialId, null); //refreshToken 비움
+
+        return getUserId(socialId);
     }
 
     public Long getUserId(String socialId) {

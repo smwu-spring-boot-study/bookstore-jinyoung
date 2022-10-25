@@ -8,12 +8,14 @@ import io.jsonwebtoken.*;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.ObjectUtils;
 
 import javax.annotation.PostConstruct;
 import javax.servlet.http.HttpServletRequest;
@@ -28,7 +30,7 @@ import java.util.stream.Collectors;
 public class JwtTokenProvider {
 
     private final UserRepository userRepository;
-
+    private final RedisTemplate redisTemplate;
     @Value("${jwt.secret}")
     private String secretKey = "MyNickNameisErjuerAndNameisMinsu";
 
@@ -85,6 +87,8 @@ public class JwtTokenProvider {
         Claims claims = JwtValidation.parseClaims(accessToken);
 
         log.info("[getAuthentication] 토큰 인증 정보 조회 시작");
+        if (claims.get("role") == null) { throw new JwtException("AccessToken Parse Failed"); } //access대신 refresh 넣었을 때 대비
+
         Collection<? extends GrantedAuthority> authorities =
                 Arrays.stream(claims.get("role").toString().split(","))
                         .map(SimpleGrantedAuthority::new).collect(Collectors.toList());
@@ -95,6 +99,19 @@ public class JwtTokenProvider {
         log.info("[getAuthentication] 토큰 인증 정보 조회 완료, UserDetails authorities : {}", authorities);
         log.info("[getAuthentication] 토큰 인증 정보 조회 완료, UserDetails nickname : {}", nickname);
         return new UsernamePasswordAuthenticationToken(principal, "", authorities);
+    }
+
+    public Boolean checkBlackList(String accessToken) {
+        //redis 뒤져서 accesstoken 존재하면 로그아웃/탈퇴한 유저임 -> 해당 accessToken으로 요청할 수 없음(false)
+        String inBlackList = (String) redisTemplate.opsForValue().get(accessToken);
+        if(ObjectUtils.isEmpty(inBlackList)) { return true; }
+        else { return false; }
+    }
+
+    public Long getExpiration(String accessToken) { // accessToken 남은 유효시간
+        Date expiration = Jwts.parser().setSigningKey(secretKey).parseClaimsJws(accessToken).getBody().getExpiration();
+        Long now = new Date().getTime();
+        return (expiration.getTime() - now);
     }
 
     public String getSocialId(String token) {
