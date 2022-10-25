@@ -16,6 +16,9 @@ spring:
       properties:
         hibernate:
           format_sql: true
+  redis:
+    host: localhost
+    port: 6379
 
   profiles:
     include: oauth
@@ -23,9 +26,15 @@ jwt:
   #HS512 알고리즘을 사용할 것이기 때문에 512bit, 즉 64byte 이상의 secret key를 사용해야 한다.
   #echo 'silvernine-tech-spring-boot-jwt-tutorial-secret-silvernine-tech-spring-boot-jwt-tutorial-secret'|base64
   secret: MyNickNameisErjuerAndNameisMinsu
+
 admin:
   email : tlszn121@naver.com, admin@naver.com
+
 logging:
   level:
     org.hibernate.SQL: debug
     org.hibernate.type.descriptor.sql: trace
+
+spring.mvc.pathmatch.matching-strategy: ant_path_matcher
+server:
+  forward-headers-strategy: framework
