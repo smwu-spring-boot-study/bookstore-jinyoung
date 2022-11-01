@@ -22,7 +22,7 @@ public class UserController {
     private final UserRepository userRepository;
 
     @GetMapping("/me")
-    @PreAuthorize("hasAnyRole('USER', 'ADMIN')")
+    @PreAuthorize("isAuthenticated()")
     public User getCurrentUser(@AuthenticationPrincipal CustomUserDetails user) {
         return userRepository.findBysocialId(user.getSocialId())
                 .orElseThrow(() -> new NoSuchElementException("User Not Found"));

@@ -59,6 +59,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
         http
                 .oauth2Login()
+                .authorizationEndpoint().baseUri("/api/v1/auth/login")
+                .and()
                 .userInfoEndpoint() //oauth로그인 성공 후 설정 시작
                 .userService(customOAuth2Service) //custom한 oauthservice연결 -> oAuth2User반환
                 .and().successHandler(successHandler)

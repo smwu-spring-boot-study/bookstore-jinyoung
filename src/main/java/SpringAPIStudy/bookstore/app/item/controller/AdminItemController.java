@@ -4,9 +4,12 @@ import SpringAPIStudy.bookstore.app.common.dto.ApiResponse;
 import SpringAPIStudy.bookstore.app.item.dto.ItemRequest;
 import SpringAPIStudy.bookstore.app.item.entity.Item;
 import SpringAPIStudy.bookstore.app.item.service.ItemService;
+import io.swagger.annotations.ApiImplicitParam;
+import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.validation.Valid;
@@ -16,6 +19,7 @@ import javax.validation.Valid;
 @RestController
 @RequestMapping("/api/v1/admin/item")
 @RequiredArgsConstructor
+@PreAuthorize("hasRole('ADMIN')")
 public class AdminItemController {
 
     private final ItemService itemService;

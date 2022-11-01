@@ -35,7 +35,6 @@ public class Item extends BaseTimeEntity {
 
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
     private ItemStatus itemStatus = ItemStatus.FOR_SALE;
 
     //@ManyToMany(mappedBy = "items") //category의 items 필드에 의해 매핑됨

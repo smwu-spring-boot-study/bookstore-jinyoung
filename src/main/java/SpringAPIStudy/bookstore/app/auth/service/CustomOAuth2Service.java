@@ -53,7 +53,7 @@ public class CustomOAuth2Service implements OAuth2UserService<OAuth2UserRequest,
         //accesstoken으로 받은 정보들을 속성 객체로 반환
 
         if (oAuthAttributes.getEmail().isEmpty()) {
-            throw new OAuth2AuthenticationException("이메일이 존재하지 않습니다.");
+            throw new OAuth2AuthenticationException("Empty Email");
         }
 
         User user = joinOrLogin(oAuthAttributes); //회원가입 혹은 로그인

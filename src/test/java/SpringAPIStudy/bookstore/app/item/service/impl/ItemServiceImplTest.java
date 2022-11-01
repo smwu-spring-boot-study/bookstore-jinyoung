@@ -1,6 +1,7 @@
 package SpringAPIStudy.bookstore.app.item.service.impl;
 
 import SpringAPIStudy.bookstore.app.item.entity.Item;
+import SpringAPIStudy.bookstore.app.item.enums.ItemStatus;
 import SpringAPIStudy.bookstore.app.item.repository.ItemRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -80,6 +81,7 @@ class ItemServiceImplTest {
         Item item = createItem();
         itemService.uploadItem(item);
         em.flush();
+        assertEquals(1, itemService.getItems().size());
 
         itemService.deleteItem(item.getId());
         em.flush();
@@ -95,7 +97,6 @@ class ItemServiceImplTest {
 
     private Item createItem() {
         Item item = Item.builder()
-                .id(1L)
                 .title("제목1")
                 .author("작가1")
                 .description("재미있는 책")
@@ -107,7 +108,6 @@ class ItemServiceImplTest {
 
     private void createItems() {
         Item item1 = Item.builder()
-                .id(1L)
                 .title("제목1")
                 .author("작가1")
                 .description("재미있는 책")
@@ -117,7 +117,6 @@ class ItemServiceImplTest {
 
         itemRepository.save(item1);
         Item item2 = Item.builder()
-                .id(2L)
                 .title("제목1")
                 .author("작가1")
                 .description("재미있는 책")
