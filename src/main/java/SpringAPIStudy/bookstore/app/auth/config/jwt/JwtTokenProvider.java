@@ -43,6 +43,7 @@ public class JwtTokenProvider {
     }
 
 
+    @Transactional
     public Token generateToken(Authentication authentication) {
 
         CustomUserDetails user = (CustomUserDetails) authentication.getPrincipal();

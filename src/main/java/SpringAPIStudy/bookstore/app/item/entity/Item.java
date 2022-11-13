@@ -1,22 +1,24 @@
 package SpringAPIStudy.bookstore.app.item.entity;
 
 import SpringAPIStudy.bookstore.app.common.entity.BaseTimeEntity;
-import SpringAPIStudy.bookstore.app.common.utils.CustomObjectMapper;
 import SpringAPIStudy.bookstore.app.item.enums.ItemStatus;
 import lombok.*;
 
 import javax.persistence.*;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
-@Getter @Setter @Builder
-@AllArgsConstructor
+@Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @ToString(callSuper = true)
 @EqualsAndHashCode(callSuper = true)
+@Table(name = "item")
 public class Item extends BaseTimeEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "item_id")
     private Long id;
 
     @Column(nullable = false)
@@ -33,16 +35,53 @@ public class Item extends BaseTimeEntity {
     @Column(nullable = false)
     private int stock; //재고
 
-
     @Enumerated(EnumType.STRING)
     private ItemStatus itemStatus = ItemStatus.FOR_SALE;
 
-    //@ManyToMany(mappedBy = "items") //category의 items 필드에 의해 매핑됨
-    //private List<Category> categories = new ArrayList<>();
-    //item-orderItem 단방향이기 때문에 item에서는 orderItem에 접근 불가 - 매핑 부분 필요없음
+    //categoryItem의 item필드에 의해 매핑됨.양방향
+    @OneToMany(mappedBy = "item", cascade = CascadeType.ALL, orphanRemoval = true) //item persist시 필드categoryItems까지 persist 전파
+    private List<CategoryItem> categoryItems = new ArrayList<>();
+
+
+    /**
+     * 연관관계 메서드
+     * categoryItem 세팅 시 CategoryItem 객체에도 Item 세팅
+     */
+    public void addCategoryItem(CategoryItem categoryItem) {
+        this.categoryItems.add(categoryItem);
+        categoryItem.setItem(this);
+    }
+
+    /**
+     * Entity 생성 메서드
+     * Item 생성 시 CategoryItem 필드 세팅
+     */
+
+    public void createItem(List<CategoryItem> categoryItems){
+
+        this.validateForSale();
+
+        for (CategoryItem categoryItem : categoryItems) {
+            this.addCategoryItem(categoryItem);
+        }
+
+    }
+
 
     //==비즈니스 로직==//
     //setter 외부(레포지토리)에서 호출하기보다는 엔티티 단에서 처리할 수 있는 로직은 엔티티 안에 만들기
+
+    public void updateItem(Item item) {
+        this.title = item.getTitle();
+        this.author = item.getAuthor();
+        this.description = item.getDescription();
+        this.price =item.getPrice();
+        this.stock = item.getStock();
+        this.categoryItems.clear();
+        item.getCategoryItems().stream().forEach(this::addCategoryItem);
+
+        this.validateForSale();
+    }
 
     /**
      * stock 증가
@@ -76,15 +115,5 @@ public class Item extends BaseTimeEntity {
         }
     }
 
-    public void updateItem(Item item) {
-        this.setTitle(item.getTitle());
-        this.setAuthor(item.getAuthor());
-        this.setDescription(item.getDescription());
-        this.setPrice(item.getPrice());
-        this.setStock(item.getStock());
-    }
 
-    public static Item of(Object o){ //Entity<-Dto
-        return CustomObjectMapper.objectMapper.convertValue(o, Item.class);
-    }
 }

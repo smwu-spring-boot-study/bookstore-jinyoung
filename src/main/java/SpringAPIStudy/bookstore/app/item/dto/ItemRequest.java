@@ -1,12 +1,15 @@
 package SpringAPIStudy.bookstore.app.item.dto;
 
 import SpringAPIStudy.bookstore.app.common.utils.CustomObjectMapper;
+import SpringAPIStudy.bookstore.app.item.entity.CategoryItem;
 import SpringAPIStudy.bookstore.app.item.entity.Item;
 import lombok.*;
 
 import javax.validation.constraints.Min;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
+import java.util.ArrayList;
+import java.util.List;
 
 
 @ToString
@@ -33,9 +36,13 @@ public class ItemRequest {
     @Min(0)
     private int stock;
 
+    @NotNull
+    private List<Long> categoryIds = new ArrayList<>();
 
-    public static ItemRequest of(Item item) { //Entity->Dto
-        return CustomObjectMapper.objectMapper.convertValue(item, ItemRequest.class);
+    public Item createItem(List<CategoryItem> categoryItems) { //Entity<-Dto
+        Item item = CustomObjectMapper.to(this, Item.class);
+        item.createItem(categoryItems);
+        return item;
     }
 
 

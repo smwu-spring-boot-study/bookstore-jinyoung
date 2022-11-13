@@ -25,7 +25,6 @@ bin/
 out/
 !**/src/main/**/out/
 !**/src/test/**/out/
-src/main/**/application.properties
 src/main/**/application.yml
 src/main/**/application-oauth.yml
 src/main/**/temp-application.properties

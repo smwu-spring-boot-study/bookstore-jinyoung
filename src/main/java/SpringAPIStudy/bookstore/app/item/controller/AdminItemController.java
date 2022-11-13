@@ -24,16 +24,17 @@ public class AdminItemController {
 
     private final ItemService itemService;
 
-    @Operation(summary = "Item 등록", description = "RequestBody에 Item정보 첨부")
+
+    @Operation(summary = "Item 등록V2", description = "RequestBody에 Item정보 첨부")
     @PostMapping()
-    public ApiResponse<Long> createItem(@RequestBody @Valid ItemRequest item) {
-        return ApiResponse.created(itemService.uploadItem(Item.of(item)));
+    public ApiResponse<Long> createItemV2(@RequestBody @Valid ItemRequest item) {
+        return ApiResponse.created(itemService.uploadItemV2(item));
     }
 
-    @Operation(summary = "Item 수정", description = "RequestBody에 Item정보 첨부")
+    @Operation(summary = "Item 수정V2", description = "RequestBody에 Item정보 첨부")
     @PutMapping()
-    public ApiResponse<Item> updateItem(@RequestBody @Valid ItemRequest item) {
-        return ApiResponse.success(itemService.updateItem(Item.of(item)));
+    public ApiResponse<Item> updateItemV2(@RequestBody @Valid ItemRequest item) {
+        return ApiResponse.success(itemService.updateItemV2(item));
     }
 
     @Operation(summary = "Item 삭제", description = "PathVariable으로 특정 Item id 첨부")

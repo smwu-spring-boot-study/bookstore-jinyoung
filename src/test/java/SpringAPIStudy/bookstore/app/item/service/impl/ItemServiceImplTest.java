@@ -2,6 +2,7 @@ package SpringAPIStudy.bookstore.app.item.service.impl;
 
 import SpringAPIStudy.bookstore.app.item.entity.Item;
 import SpringAPIStudy.bookstore.app.item.enums.ItemStatus;
+import SpringAPIStudy.bookstore.app.item.repository.CategoryRepository;
 import SpringAPIStudy.bookstore.app.item.repository.ItemRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -27,6 +28,8 @@ import static org.junit.jupiter.api.Assertions.*;
 class ItemServiceImplTest {
 
     @Autowired private ItemRepository itemRepository;
+    @Autowired private CategoryRepository categoryRepository;
+
     @Autowired private ItemServiceImpl itemService;
     @PersistenceContext EntityManager em;
 

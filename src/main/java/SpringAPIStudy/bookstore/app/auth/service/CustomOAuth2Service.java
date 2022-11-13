@@ -23,7 +23,6 @@ import java.util.Optional;
 
 @Slf4j
 @Service
-@Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class CustomOAuth2Service implements OAuth2UserService<OAuth2UserRequest, OAuth2User> {
 
@@ -63,7 +62,6 @@ public class CustomOAuth2Service implements OAuth2UserService<OAuth2UserRequest,
     }
 
     //회원가입 혹은 로그인
-    @Transactional
     private User joinOrLogin(OAuthAttributes attributes) {
         log.info("[saveOrUpdate] socialid: {}", attributes.getSocialId());
         Optional<User> optionalUser = userRepository.findBysocialId(attributes.getSocialId());
