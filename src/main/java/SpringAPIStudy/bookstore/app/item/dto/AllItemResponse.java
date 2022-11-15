@@ -1,6 +1,7 @@
 package SpringAPIStudy.bookstore.app.item.dto;
 
 import SpringAPIStudy.bookstore.app.common.utils.CustomObjectMapper;
+import SpringAPIStudy.bookstore.app.item.entity.CategoryItem;
 import SpringAPIStudy.bookstore.app.item.entity.Item;
 import lombok.*;
 import javax.validation.constraints.NotBlank;
@@ -28,7 +29,10 @@ public class AllItemResponse {
     @NotNull
     private int price;
 
-    public void reduceDescription() {
+
+    private List<CategoryDto> categories;
+
+    private void reduceDescription() {
         if (this.description.length() > 30) this.description = description.substring(0, 30);
     }
 
@@ -37,9 +41,25 @@ public class AllItemResponse {
         return itemList.stream().map(item -> {
             AllItemResponse allItemResponse = CustomObjectMapper.objectMapper.convertValue(item, AllItemResponse.class);
             allItemResponse.reduceDescription();
+            allItemResponse.categories = item.getCategoryItems().stream()
+                    .map(categoryItem -> new CategoryDto(categoryItem))
+                    .collect(Collectors.toList());
             return allItemResponse;
         }).collect(Collectors.toList());
 
     }
 
+    @Data
+    private static class CategoryDto {
+
+        private Long parent_id;
+
+        private Long id;
+
+        public CategoryDto(CategoryItem categoryItem) {
+            this.parent_id = categoryItem.getCategory().getParent().getId();
+            this.id = categoryItem.getCategory().getId();
+        }
+
+    }
 }

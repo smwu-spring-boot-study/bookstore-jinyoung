@@ -1,11 +1,14 @@
 package SpringAPIStudy.bookstore.app.item.service.impl;
 
+import SpringAPIStudy.bookstore.app.item.dto.AllItemResponse;
+import SpringAPIStudy.bookstore.app.item.dto.DetailItemResponse;
 import SpringAPIStudy.bookstore.app.item.dto.ItemRequest;
 import SpringAPIStudy.bookstore.app.item.entity.Category;
 import SpringAPIStudy.bookstore.app.item.entity.CategoryItem;
 import SpringAPIStudy.bookstore.app.item.entity.Item;
 import SpringAPIStudy.bookstore.app.item.repository.CategoryRepository;
 import SpringAPIStudy.bookstore.app.item.repository.ItemRepository;
+import SpringAPIStudy.bookstore.app.item.repository.dao.ItemDao;
 import SpringAPIStudy.bookstore.app.item.service.ItemService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -24,10 +27,11 @@ public class ItemServiceImpl implements ItemService {
     private final ItemRepository itemRepository;
     private final CategoryRepository categoryRepository;
 
+    private final ItemDao itemDao;
+
     @Override
     @Transactional
-    public Long uploadItemV2(ItemRequest itemRequest) {
-
+    public Long uploadItem(ItemRequest itemRequest) {
         List<Category> categories = categoryRepository.findAllById(itemRequest.getCategoryIds());
         List<CategoryItem> categoryItems = CategoryItem.createCategoryItem(categories);
 
@@ -36,10 +40,9 @@ public class ItemServiceImpl implements ItemService {
         return itemRepository.save(item).getId();
     }
 
-
     @Override
     @Transactional
-    public Item updateItemV2(ItemRequest itemRequest) {
+    public DetailItemResponse updateItem(ItemRequest itemRequest) throws NoSuchElementException {
         Item findItem = itemRepository.findById(itemRequest.getId())
                 .orElseThrow(()->{ throw new NoSuchElementException("Item Not Found");});
 
@@ -49,7 +52,7 @@ public class ItemServiceImpl implements ItemService {
         Item requestItem = itemRequest.createItem(categoryItems);
 
         findItem.updateItem(requestItem); //변경 감지
-        return findItem;
+        return DetailItemResponse.of(findItem);
     }
 
     @Override
@@ -64,14 +67,16 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    public List<Item> getItems() {
-        return itemRepository.findAll();
+    public List<AllItemResponse> getItems() {
+        return AllItemResponse.of(itemDao.getAllWithCategory());
     }
 
     @Override
-    public Item getItem(Long id) {
-        return itemRepository.findById(id)
+    public DetailItemResponse getItem(Long id) throws NoSuchElementException {
+        Item findItem = itemRepository.findById(id)
                 .orElseThrow(()->{ throw new NoSuchElementException("Item Not Found");});
+        return DetailItemResponse.of(findItem);
     }
+
 
 }

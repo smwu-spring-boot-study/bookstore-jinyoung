@@ -31,6 +31,7 @@ public class AuthService {
     private final RedisTemplate redisTemplate;
 
 
+    @Transactional
     public Token refreshToken(RefreshRequest refreshRequest) { //access토큰 만료 시 클라가 요청
 
         final String oldAccessToken = refreshRequest.getAccessToken();

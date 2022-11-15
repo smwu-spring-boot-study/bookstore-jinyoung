@@ -40,6 +40,7 @@ public class Item extends BaseTimeEntity {
 
     //categoryItem의 item필드에 의해 매핑됨.양방향
     @OneToMany(mappedBy = "item", cascade = CascadeType.ALL, orphanRemoval = true) //item persist시 필드categoryItems까지 persist 전파
+    @ToString.Exclude
     private List<CategoryItem> categoryItems = new ArrayList<>();
 
 

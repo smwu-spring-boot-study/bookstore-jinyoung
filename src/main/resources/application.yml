@@ -10,8 +10,10 @@ spring:
     init:
       platform: postgres
   jpa:
+    open-in-view: false
     database: postgresql
     hibernate:
+      default_batch_fetch_size: 100
       dialect: org.hibernate.dialect.PostgreSQLDialect
       ddl-auto: create-drop
     #defer-datasource-initialization: true

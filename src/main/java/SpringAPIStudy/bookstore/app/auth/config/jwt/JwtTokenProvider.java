@@ -32,7 +32,7 @@ public class JwtTokenProvider {
     private final UserRepository userRepository;
     private final RedisTemplate redisTemplate;
     @Value("${jwt.secret}")
-    private String secretKey = "MyNickNameisErjuerAndNameisMinsu";
+    private String secretKey;
 
     private final long tokenPeriod = 1000L * 60L * 60L; //60분 후 만료
     private final long refreshPeriod = 1000L * 60L * 60L * 24L * 30L *3L; //3주

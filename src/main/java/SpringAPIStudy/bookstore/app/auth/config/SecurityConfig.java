@@ -53,6 +53,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
                     .antMatchers(HttpMethod.OPTIONS).permitAll()
                     .antMatchers("/oauth2/**").permitAll()
                     .antMatchers("/api/v1/auth/**").permitAll()
+
                     .antMatchers("/api/v1/admin/**").hasRole("ADMIN")
                     .antMatchers(HttpMethod.GET, "/api/v1/item/**").permitAll()
                     .anyRequest().authenticated(); //그외는 인증된 사용자만 접근 가능

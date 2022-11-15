@@ -19,9 +19,8 @@ public class CategoryItem {
     @Column(name = "category_item_id")
     private Long id;
 
-
-    @JsonIgnore //양방향 관계 -> 한쪽에 jsonignore하지않으면 무한으로 객체를 찾아나감
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @JsonIgnore
+    @ManyToOne(fetch = FetchType.LAZY, optional = false) //상대 ROW가 존재해야 함
     @JoinColumn(name = "item_id", nullable = false) //item과 맵핑. 연관관계의 주인
     private Item item;
 

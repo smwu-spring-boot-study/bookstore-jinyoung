@@ -1,6 +1,5 @@
 package SpringAPIStudy.bookstore.app.item.entity;
 
-import SpringAPIStudy.bookstore.app.common.utils.CustomObjectMapper;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.*;
 
@@ -30,10 +29,13 @@ public class Category {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "parent_id")
-    private Category parent;
+    @JsonIgnore
+    private Category parent; //주인
 
-    @OneToMany(mappedBy = "parent", cascade = CascadeType.ALL)
-    private List<Category> child = new ArrayList<>();
+    @OneToMany(mappedBy = "parent", cascade = CascadeType.ALL, orphanRemoval = true) //자식 list추가 후 저장 시 해당 entity도 persist
+    @ToString.Exclude
+    @JsonIgnore
+    private List<Category> child = new ArrayList<>(); //종속
 
     //==연관관계 메서드==양방향일 때//
     public void addChildCategory(Category child) {

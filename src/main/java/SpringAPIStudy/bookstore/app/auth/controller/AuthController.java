@@ -7,11 +7,11 @@ import SpringAPIStudy.bookstore.app.common.dto.ApiResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 
-@Slf4j
 @RestController
 @RequestMapping("/api/v1/auth")
 @RequiredArgsConstructor
@@ -27,6 +27,7 @@ public class AuthController {
     }
 
     @Operation(summary = "로그아웃: 해당 accessToken의 접근 막음", description = "Header에 Authorization 값 첨부")
+    @PreAuthorize("isAuthenticated()")
     @PostMapping("/logout")
     public ApiResponse<Long> logout(HttpServletRequest request) {
         return ApiResponse.success(authService.logout(request));
