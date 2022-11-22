@@ -38,3 +38,6 @@ src/test/**/application.yml
 
 ### VS Code ###
 .vscode/
+
+### IMAGES ###
+img/

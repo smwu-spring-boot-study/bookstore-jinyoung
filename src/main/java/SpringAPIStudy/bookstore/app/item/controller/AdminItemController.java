@@ -9,8 +9,10 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.validation.Valid;
+import java.util.List;
 
 
 @Slf4j
@@ -23,11 +25,11 @@ public class AdminItemController {
     private final ItemService itemService;
 
 
-    @Operation(summary = "Item 등록V2", description = "RequestBody에 Item정보 첨부")
-    @PostMapping()
-    public ApiResponse<Long> createItem(@RequestBody @Valid ItemRequest item) {
-        return ApiResponse.created(itemService.uploadItem(item));
-    }
+//    @Operation(summary = "Item 등록V2", description = "RequestBody에 Item정보 첨부")
+//    @PostMapping()
+//    public ApiResponse<Long> createItem(@RequestBody @Valid ItemRequest item) {
+//        return ApiResponse.created(itemService.uploadItem(item));
+//    }
 
     @Operation(summary = "Item 수정V2", description = "RequestBody에 Item정보 첨부")
     @PutMapping()
@@ -41,7 +43,15 @@ public class AdminItemController {
         return ApiResponse.success(itemService.deleteItem(id));
     }
 
-
+    @PostMapping(value = "/new") //img까지 첨부 - formData의 경우 @RequsetBody적지 말고, Dto에 반드시 Setter열어놔야함
+    public ApiResponse<Long> itemNew(@Valid ItemRequest item,
+                                       @RequestParam("itemImgFile") List<MultipartFile> itemImgFileList) {
+        try {
+            return ApiResponse.created(itemService.uploadItem(item, itemImgFileList));
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+    }
 
 
 }

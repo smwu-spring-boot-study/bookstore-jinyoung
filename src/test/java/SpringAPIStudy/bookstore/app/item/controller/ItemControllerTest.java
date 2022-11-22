@@ -59,59 +59,59 @@ class ItemControllerTest {
                 .build();
     }
 
-    @Test
-    @WithMockCustomUser(socialId = "socialId", nickname = "testNick")
-    void getItem() throws Exception {
-        Item item =  Item.builder()
-                .title("책1")
-                .author("작가1")
-                .description("재미있어요")
-                .price(10000)
-                .stock(100)
-                .build();
-
-
-        Long itemId = itemService.uploadItem(item);
-
-        MockHttpServletRequestBuilder builder = MockMvcRequestBuilders
-                .get(BASE_URL + itemId);
-
-        mockMvc.perform(builder)
-                //.andExpect(status().isOk())
-                //ndExpect(jsonPath("$..['title'").exists())
-                .andDo(print());
-
-    }
-
-    @Test
-    @WithMockCustomUser(socialId = "socialId", nickname = "testNick")
-    //@WithMockCustomOAuth2Account(registrationId = "naver", role = "ROLE_ADMIN")
-    void uploadItem() throws Exception {
-        Item item =  Item.builder()
-                .title("책1")
-                .author("작가1")
-                .description("재미있어요")
-                .price(10000)
-                .stock(100)
-                .build();
-
-        MockHttpServletRequestBuilder builder = MockMvcRequestBuilders
-                .post(BASE_URL)
-                .content(new ObjectMapper().writeValueAsString(item))
-                .contentType(MediaType.APPLICATION_JSON)
-                .with(oauth2Login()
-                        .authorities(new SimpleGrantedAuthority("ROLE_ADMIN"))
-                        .attributes(attributes -> {
-                            attributes.put("socialId", "socialId");
-                            attributes.put("nickname", "testNickname");
-                            attributes.put("email", "test@naver.com");
-                        }));
-
-        //given(itemService.getItem(itemId))
-        //        .willReturn(item);
-
-        mockMvc.perform(builder)
-                .andExpect(status().isOk())
-                .andDo(print());
-    }
+//    @Test
+//    @WithMockCustomUser(socialId = "socialId", nickname = "testNick")
+//    void getItem() throws Exception {
+//        Item item =  Item.builder()
+//                .title("책1")
+//                .author("작가1")
+//                .description("재미있어요")
+//                .price(10000)
+//                .stock(100)
+//                .build();
+//
+//
+//        Long itemId = itemService.uploadItem(item);
+//
+//        MockHttpServletRequestBuilder builder = MockMvcRequestBuilders
+//                .get(BASE_URL + itemId);
+//
+//        mockMvc.perform(builder)
+//                //.andExpect(status().isOk())
+//                //ndExpect(jsonPath("$..['title'").exists())
+//                .andDo(print());
+//
+//    }
+//
+//    @Test
+//    @WithMockCustomUser(socialId = "socialId", nickname = "testNick")
+//    //@WithMockCustomOAuth2Account(registrationId = "naver", role = "ROLE_ADMIN")
+//    void uploadItem() throws Exception {
+//        Item item =  Item.builder()
+//                .title("책1")
+//                .author("작가1")
+//                .description("재미있어요")
+//                .price(10000)
+//                .stock(100)
+//                .build();
+//
+//        MockHttpServletRequestBuilder builder = MockMvcRequestBuilders
+//                .post(BASE_URL)
+//                .content(new ObjectMapper().writeValueAsString(item))
+//                .contentType(MediaType.APPLICATION_JSON)
+//                .with(oauth2Login()
+//                        .authorities(new SimpleGrantedAuthority("ROLE_ADMIN"))
+//                        .attributes(attributes -> {
+//                            attributes.put("socialId", "socialId");
+//                            attributes.put("nickname", "testNickname");
+//                            attributes.put("email", "test@naver.com");
+//                        }));
+//
+//        //given(itemService.getItem(itemId))
+//        //        .willReturn(item);
+//
+//        mockMvc.perform(builder)
+//                .andExpect(status().isOk())
+//                .andDo(print());
+//    }
 }

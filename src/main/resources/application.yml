@@ -1,4 +1,8 @@
 spring:
+  servlet:
+    multipart:
+      maxFileSize: 50MB
+      maxRequestSize: 100MB
   datasource:
     hikari.maximum-pool-size: 4
     url: jdbc:postgresql://127.0.0.1:5432/postgres
@@ -27,13 +31,6 @@ spring:
 
   profiles:
     include: oauth
-jwt:
-  #HS512 알고리즘을 사용할 것이기 때문에 512bit, 즉 64byte 이상의 secret key를 사용해야 한다.
-  #echo 'silvernine-tech-spring-boot-jwt-tutorial-secret-silvernine-tech-spring-boot-jwt-tutorial-secret'|base64
-  secret: MyNickNameisErjuerAndNameisMinsu
-
-admin:
-  email : tlszn121@naver.com, admin@naver.com
 
 logging:
   level:
@@ -43,3 +40,15 @@ logging:
 spring.mvc.pathmatch.matching-strategy: ant_path_matcher
 server:
   forward-headers-strategy: framework
+
+jwt:
+  #HS512 알고리즘을 사용할 것이기 때문에 512bit, 즉 64byte 이상의 secret key를 사용해야 한다.
+  #echo 'silvernine-tech-spring-boot-jwt-tutorial-secret-silvernine-tech-spring-boot-jwt-tutorial-secret'|base64
+  secret: MyNickNameisErjuerAndNameisMinsu
+
+admin:
+  email : tlszn121@naver.com, admin@naver.com
+#상품 이미지 업로드 경로
+itemImgLocation: D:\jinyoung\Documents\2022SpringAPI_Study\bookstore\img\item
+#리소스 업로드 경로
+uploadPath: file:\\\D:\jinyoung\Documents\2022SpringAPI_Study\bookstore\img
