@@ -12,7 +12,7 @@ public interface ItemService {
 
     Long uploadItem(ItemRequest itemRequest, List<MultipartFile> itemImgFileList) throws Exception;
 
-    DetailItemResponse updateItem(ItemRequest itemRequest) throws NoSuchElementException;
+    DetailItemResponse updateItem(ItemRequest itemRequest, List<MultipartFile> itemImgFileList) throws Exception;
 
     Long deleteItem(Long id) throws NoSuchElementException;
 

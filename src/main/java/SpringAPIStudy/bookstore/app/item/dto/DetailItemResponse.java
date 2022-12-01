@@ -8,6 +8,7 @@ import lombok.*;
 
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -31,6 +32,8 @@ public class DetailItemResponse {
     private int price;
 
     private List<CategoryDto> categories;
+
+    private List<ItemImgDto> itemImgDtoList;
 
     public static DetailItemResponse of(Item item) { //Entity->Dto
         DetailItemResponse detailItemResponse = CustomObjectMapper.objectMapper.convertValue(item, DetailItemResponse.class);

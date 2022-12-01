@@ -5,13 +5,16 @@ import SpringAPIStudy.bookstore.app.common.utils.CustomObjectMapper;
 import SpringAPIStudy.bookstore.app.item.entity.ItemImg;
 import lombok.*;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 
 @ToString
 @Getter
 @Setter
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
-@AllArgsConstructor(access = AccessLevel.PRIVATE)
-public class ItemImgRequest {
+@AllArgsConstructor
+public class ItemImgDto {
 
     private Long id;
 
@@ -23,7 +26,9 @@ public class ItemImgRequest {
 
     private String repImgYn;
 
-    public static ItemImgRequest of(ItemImg itemImg) { //Entity->Dto
-        return CustomObjectMapper.to(itemImg, ItemImgRequest.class);
+    public static List<ItemImgDto> of(List<ItemImg> itemImgList) { //Entity->Dto
+        return itemImgList.stream()
+                .map(itemImg -> CustomObjectMapper.objectMapper.convertValue(itemImg, ItemImgDto.class))
+                .collect(Collectors.toList());
     }
 }

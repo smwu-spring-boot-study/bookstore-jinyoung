@@ -31,11 +31,11 @@ public class AdminItemController {
 //        return ApiResponse.created(itemService.uploadItem(item));
 //    }
 
-    @Operation(summary = "Item 수정V2", description = "RequestBody에 Item정보 첨부")
-    @PutMapping()
-    public ApiResponse<DetailItemResponse> updateItem(@RequestBody @Valid ItemRequest item) {
-        return ApiResponse.success(itemService.updateItem(item));
-    }
+//    @Operation(summary = "Item 수정V2", description = "RequestBody에 Item정보 첨부")
+//    @PutMapping()
+//    public ApiResponse<DetailItemResponse> updateItem(@RequestBody @Valid ItemRequest item) {
+//        return ApiResponse.success(itemService.updateItem(item));
+//    }
 
     @Operation(summary = "Item 삭제", description = "PathVariable으로 특정 Item id 첨부")
     @DeleteMapping("/{id}")
@@ -45,12 +45,16 @@ public class AdminItemController {
 
     @PostMapping(value = "/new") //img까지 첨부 - formData의 경우 @RequsetBody적지 말고, Dto에 반드시 Setter열어놔야함
     public ApiResponse<Long> itemNew(@Valid ItemRequest item,
-                                       @RequestParam("itemImgFile") List<MultipartFile> itemImgFileList) {
-        try {
-            return ApiResponse.created(itemService.uploadItem(item, itemImgFileList));
-        } catch (Exception e) {
-            throw new RuntimeException(e);
-        }
+                                       @RequestParam("itemImgFile") List<MultipartFile> itemImgFileList) throws Exception {
+
+      return ApiResponse.created(itemService.uploadItem(item, itemImgFileList));
+
+
+    }
+    @PutMapping(value = "/new")
+    public ApiResponse<DetailItemResponse> updateItem(@Valid ItemRequest item,
+                                                      @RequestParam("itemImgFile") List<MultipartFile> itemImgFileList) throws Exception {
+        return ApiResponse.success(itemService.updateItem(item, itemImgFileList));
     }
 
 

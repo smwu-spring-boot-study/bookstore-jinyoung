@@ -12,6 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.util.List;
 import java.util.NoSuchElementException;
 
 @Slf4j
@@ -46,13 +47,18 @@ public class ItemImgServiceImpl implements ItemImgService {
     }
 
     @Override
+    public List<ItemImg> getItemImgList(Long itemId) {
+        return itemImgRepository.findByItemIdOrderByIdAsc(itemId);
+    }
+
+    @Override
     public void updateItemImg(Long itemImgId, MultipartFile itemImgFile) throws Exception {
         if(!itemImgFile.isEmpty()){
             ItemImg savedItemImg = itemImgRepository.findById(itemImgId)
                     .orElseThrow(NoSuchElementException::new);
 
             //기존 이미지 파일 삭제
-            if(!StringUtils.isEmpty(savedItemImg.getImgName())) {
+            if(!StringUtils.hasLength(savedItemImg.getImgName())) {
                 fileService.deleteFile(itemImgLocation+"/"+
                         savedItemImg.getImgName());
             }

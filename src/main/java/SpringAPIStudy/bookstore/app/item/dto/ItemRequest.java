@@ -39,10 +39,8 @@ public class ItemRequest {
     @NotNull
     private List<Long> categoryIds = new ArrayList<>();
 
-//    private List<ItemImgRequest> itemImgDtoList = new ArrayList<>();
-//
-//    private List<Long> itemImgIds = new ArrayList<>();
-//
+    private List<Long> itemImgIds = new ArrayList<>(); //수정 시 사용
+
     public Item createItem(List<CategoryItem> categoryItems) { //Entity<-Dto
         Item item = CustomObjectMapper.to(this, Item.class);
         item.createItem(categoryItems);
